@@ -168,7 +168,7 @@ Cenário: Cadastrar veículo
 |----|-------|
 | RN01 | Só são aceitos cadastros com e-mail do domínio institucional (@univille.br). O e-mail é único no sistema. |
 | RN02 | Só é possível oferecer carona com pelo menos um veículo cadastrado. |
-| RN03 | O número de vagas ofertadas deve ser de 1 até (lugares do veículo - 1), no máximo 6. |
+| RN03 | O número de vagas ofertadas deve ser de 1, no máximo 4. |
 | RN04 | A saída da carona deve ocorrer com pelo menos 1 hora de antecedência da publicação. |
 | RN05 | O motorista não pode solicitar vaga na própria carona. |
 | RN06 | Cada passageiro pode ter apenas uma solicitação ativa (pendente ou confirmada) por carona. |
@@ -179,8 +179,6 @@ Cenário: Cadastrar veículo
 | RN11 | Solicitações pendentes de caronas cuja saída já passou mudam automaticamente para "Expirada". |
 | RN12 | Um passageiro não pode ter duas caronas confirmadas com saídas a menos de 1 hora uma da outra. |
 | RN13 | Caronas com saída no passado e não canceladas passam para "Concluída". |
-| RN14 | Locais de saída e destino são escolhidos de uma lista de bairros e campi cadastrados (sem geolocalização no MVP). |
-| RN15 | No MVP as caronas são gratuitas: o sistema não processa pagamentos. |
 
 ### Status
 - **Carona:** Aberta, Lotada, Cancelada, Concluída.
