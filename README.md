@@ -42,8 +42,6 @@ erDiagram
   LOCAL ||--o{ CARONA : destino
   CARONA ||--o{ SOLICITACAO : recebe
   USUARIO ||--o{ SOLICITACAO : faz
-  USUARIO ||--o{ NOTIFICACAO : recebe
-  SOLICITACAO ||--o{ NOTIFICACAO : gera
 
   USUARIO {
     int id PK
@@ -88,12 +86,5 @@ erDiagram
     string status "PENDENTE, CONFIRMADA, RECUSADA, CANCELADA, EXPIRADA"
     datetime criado_em
     datetime respondido_em
-  }
-  NOTIFICACAO {
-    int id PK
-    int usuario_id FK
-    int solicitacao_id FK
-    string tipo
-    datetime enviado_em
   }
 ```
