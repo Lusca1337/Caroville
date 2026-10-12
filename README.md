@@ -10,10 +10,7 @@ Plataforma de caronas para estudantes da Univille. Conecta alunos que **oferecem
 | # | Documento | Conteúdo |
 |---|-----------|----------|
 | 1 | [Requisitos funcionais, histórias de usuário e regras de negócio](docs/01-requisitos-funcionais.md) | RF, histórias com critérios de aceite BDD, RN |
-| 2 | [Requisitos não funcionais](docs/02-requisitos-nao-funcionais.md) | RNF mensuráveis |
-| 3 | [Protótipos de tela](docs/03-prototipos.md) | Telas no Figma ligadas às histórias |
-| 4 | [ADRs](docs/adrs/) | Decisões de arquitetura |
-| 5 | [Modelagem de dados (DER)](docs/05-modelagem-de-dados.md) | DER e dicionário de dados |
+| 2 | [Requisitos não funcionais](docs/02-requisitos-nao-funcionais.md) | RNF |
 
 ## Visão geral da arquitetura
 
