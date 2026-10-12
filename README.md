@@ -97,15 +97,3 @@ erDiagram
     datetime enviado_em
   }
 ```
-
-## Dicionário resumido e restrições
-
-| Tabela | Restrições principais |
-|--------|-----------------------|
-| USUARIO | `email` único e do domínio institucional (RN01) |
-| VEICULO | `lugares` entre 2 e 8 |
-| CARONA | `vagas_total` entre 1 e 6 (RN03); `vagas_disponiveis` entre 0 e `vagas_total`; origem diferente do destino |
-| SOLICITACAO | Um passageiro só pode ter uma solicitação ativa (pendente ou confirmada) por carona (RN06) |
-| NOTIFICACAO | `solicitacao_id` é opcional |
-
-O telefone fica em USUARIO e só é mostrado quando existe uma solicitação confirmada entre as duas pessoas (RN10).
