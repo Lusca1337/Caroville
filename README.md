@@ -21,11 +21,11 @@ Plataforma de caronas para estudantes da Univille. Conecta alunos que **oferecem
 
 | ADR | Decisão | Status |
 |-----|---------|--------|
-| [ADR-001](docs/adrs/ADR-001-frontend.md) | Frontend com React e Vite | Aceito |
-| [ADR-002](docs/adrs/ADR-002-banco-de-dados.md) | Banco de dados PostgreSQL | Aceito |
-| [ADR-003](docs/adrs/ADR-003-execucao-local.md) | Execução local, sem hospedagem, no MVP | Aceito |
-| [ADR-004](docs/adrs/ADR-004-backend.md) | Backend com Node.js e Express | Aceito |
-| [ADR-005](docs/adrs/ADR-005-autenticacao.md) | Autenticação com e-mail institucional e JWT | Aceito |
+| [ADR-001](docs/ADR-001-frontend.md) | Frontend com React e Vite | Aceito |
+| [ADR-002](docs/ADR-002-banco-de-dados.md) | Banco de dados PostgreSQL | Aceito |
+| [ADR-003](docs/ADR-003-execucao-local.md) | Execução local, sem hospedagem, no MVP | Aceito |
+| [ADR-004](docs/ADR-004-backend.md) | Backend com Node.js e Express | Aceito |
+| [ADR-005](docs/ADR-005-autenticacao.md) | Autenticação com e-mail institucional e JWT | Aceito |
 
 ## Visão geral da arquitetura
 
