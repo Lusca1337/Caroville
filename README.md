@@ -10,7 +10,22 @@ Plataforma de caronas para estudantes da Univille. Conecta alunos que **oferecem
 | # | Documento | Conteúdo |
 |---|-----------|----------|
 | 1 | [Requisitos funcionais, histórias de usuário e regras de negócio](docs/01-requisitos-funcionais.md) | RF, histórias com critérios de aceite BDD, RN |
-| 2 | [Requisitos não funcionais](docs/02-requisitos-nao-funcionais.md) | RNF |
+| 2 | [Requisitos não funcionais](docs/02-requisitos-nao-funcionais.md) | RNF mensuráveis |
+| 3 | [Protótipos de tela](docs/03-prototipos.md) | Telas no Figma ligadas às histórias |
+| 4 | [Registros de decisão de arquitetura (ADRs)](docs/adrs/) | Decisões tecnológicas (veja a tabela abaixo) |
+| 5 | [Modelagem de dados (DER)](docs/05-modelagem-de-dados.md) | DER e restrições |
+
+**Protótipo no Figma:** [Caroville - Protótipos MVP](https://www.figma.com/design/SCf876FNOK081GMjxVszv8)
+
+## Decisões de arquitetura (ADRs)
+
+| ADR | Decisão | Status |
+|-----|---------|--------|
+| [ADR-001](docs/adrs/ADR-001-frontend.md) | Frontend com React e Vite | Aceito |
+| [ADR-002](docs/adrs/ADR-002-banco-de-dados.md) | Banco de dados PostgreSQL | Aceito |
+| [ADR-003](docs/adrs/ADR-003-execucao-local.md) | Execução local, sem hospedagem, no MVP | Aceito |
+| [ADR-004](docs/adrs/ADR-004-backend.md) | Backend com Node.js e Express | Aceito |
+| [ADR-005](docs/adrs/ADR-005-autenticacao.md) | Autenticação com e-mail institucional e JWT | Aceito |
 
 ## Visão geral da arquitetura
 
@@ -28,7 +43,7 @@ Cadastro e login com e-mail institucional, oferta de carona, busca por saída/de
 
 Fora do escopo do MVP: pagamento ou rateio de custos, chat interno, mapa com rotas em tempo real e avaliações entre usuários.
 
-# 5. Modelagem de Dados (DER)
+## Modelagem de dados (DER)
 
 ```mermaid
 erDiagram
