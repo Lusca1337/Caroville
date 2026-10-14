@@ -11,20 +11,18 @@ Plataforma de caronas para estudantes da Univille. Conecta alunos que **oferecem
 |---|-----------|----------|
 | 1 | [Requisitos funcionais, histórias de usuário e regras de negócio](docs/01-requisitos-funcionais.md) | RF, histórias com critérios de aceite BDD, RN |
 | 2 | [Requisitos não funcionais](docs/02-requisitos-nao-funcionais.md) | RNF mensuráveis |
-| 3 | [Protótipos de tela](docs/03-prototipos.md) | Telas no Figma ligadas às histórias |
-| 4 | [Registros de decisão de arquitetura (ADRs)](docs/adrs/) | Decisões tecnológicas (veja a tabela abaixo) |
-| 5 | [Modelagem de dados (DER)](docs/05-modelagem-de-dados.md) | DER e restrições |
-
-**Protótipo no Figma:** [Caroville - Protótipos MVP](https://www.figma.com/design/SCf876FNOK081GMjxVszv8)
+| 3 | [Protótipos de tela no Figma](https://www.figma.com/design/SCf876FNOK081GMjxVszv8) | 8 telas navegáveis ligadas às histórias |
+| 4 | [Registros de decisão de arquitetura (ADRs)](#decisões-de-arquitetura-adrs) | Decisões tecnológicas |
+| 5 | [Modelagem de dados (DER)](#modelagem-de-dados-der) | DER e restrições |
 
 ## Decisões de arquitetura (ADRs)
 
 | ADR | Decisão | Status |
 |-----|---------|--------|
-| [ADR-001](docs/ADR-001-frontend.md) | Frontend com React | Aceito |
+| [ADR-001](docs/ADR-001-frontend.md) | Frontend com React e Vite | Aceito |
 | [ADR-002](docs/ADR-002-banco-de-dados.md) | Banco de dados PostgreSQL | Aceito |
 | [ADR-003](docs/ADR-003-execucao-local.md) | Execução local, sem hospedagem, no MVP | Aceito |
-| [ADR-004](docs/ADR-004-backend.md) | Backend com Node.js e Express | Aceito |
+| [ADR-004](docs/ADR-004-backend.md) | Backend com Python e FastAPI | Aceito |
 | [ADR-005](docs/ADR-005-autenticacao.md) | Autenticação com e-mail institucional e JWT | Aceito |
 
 ## Visão geral da arquitetura
