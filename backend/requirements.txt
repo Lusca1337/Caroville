@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+psycopg[binary]
+bcrypt
+PyJWT
+python-dotenv
+pytest
+httpx
