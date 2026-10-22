@@ -1,0 +1,201 @@
+/* Estilos do Caroville, seguindo o protótipo do Figma (tela de 390 px, fonte Inter) */
+:root {
+  --verde: #005b35;
+  --verde-claro: #e6f3dd;
+  --fundo: #f4f5f4;
+  --texto: #262626;
+  --cinza: #6b7280;
+  --borda: #e2e5e2;
+  --vermelho: #c0392b;
+  --amarelo-fundo: #fff1d6;
+  --amarelo-texto: #8a5a00;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #dfe3df;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--texto);
+}
+
+/* Moldura de celular: no computador fica centralizada, no celular ocupa a tela toda */
+.celular {
+  max-width: 430px;
+  height: 100vh;
+  margin: 0 auto;
+  background: var(--fundo);
+  overflow: hidden;
+}
+@media (min-width: 500px) {
+  .celular {
+    height: min(844px, calc(100vh - 48px));
+    margin: 24px auto;
+    border-radius: 24px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.tela { display: flex; flex-direction: column; height: 100%; }
+
+.cabecalho {
+  background: var(--verde);
+  padding: 48px 16px 16px;
+  flex-shrink: 0;
+}
+.cabecalho h1 { margin: 0; font-size: 18px; font-weight: 600; color: #fff; }
+
+.conteudo {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.formulario { display: flex; flex-direction: column; gap: 14px; }
+
+.titulo { margin: 0; font-size: 22px; font-weight: 700; }
+.subtitulo { margin: 0; font-size: 14px; color: var(--cinza); }
+.secao { margin: 0; font-size: 15px; font-weight: 600; }
+.resumo { margin: 0; font-size: 13px; font-weight: 500; color: var(--cinza); }
+
+/* Campos */
+.campo { display: flex; flex-direction: column; gap: 6px; }
+.rotulo { font-size: 13px; font-weight: 500; }
+.entrada {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--texto);
+  appearance: none;
+}
+.entrada::placeholder { color: var(--cinza); }
+.entrada:focus { outline: 2px solid var(--verde); outline-offset: -1px; }
+select.entrada {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+/* Botões */
+.botao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 0;
+  background: var(--verde);
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+.botao:disabled { opacity: 0.6; cursor: default; }
+.botao-contorno { background: #fff; color: var(--verde); border: 1px solid var(--verde); }
+.botao-perigo { background: #fff; color: var(--vermelho); border: 1px solid var(--vermelho); }
+
+.link { color: var(--verde); font-size: 14px; font-weight: 600; text-align: center; text-decoration: none; }
+
+/* Cartões e chips */
+.cartao {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  padding: 14px;
+  color: inherit;
+  text-decoration: none;
+}
+.cartao-grande { gap: 10px; padding: 16px; }
+.cartao-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.hora { margin: 0; font-size: 16px; font-weight: 700; }
+.hora-grande { margin: 0; font-size: 20px; font-weight: 700; }
+.rota { margin: 0; font-size: 14px; font-weight: 500; white-space: pre-wrap; }
+.rota-grande { font-size: 15px; }
+.detalhe { margin: 0; font-size: 12px; color: var(--cinza); }
+.detalhe-grande { font-size: 13px; }
+
+.chip {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--verde-claro);
+  color: var(--verde);
+}
+.chip-amarelo { background: var(--amarelo-fundo); color: var(--amarelo-texto); }
+.chip-cinza { background: var(--borda); color: var(--cinza); }
+.chip-vermelho { background: #fbe3e0; color: var(--vermelho); }
+.chip-solto { align-self: flex-start; }
+
+.acoes { display: flex; gap: 10px; }
+.acoes .botao { flex: 1; }
+
+/* Abas (Oferecidas / Solicitadas) */
+.abas { display: flex; background: var(--borda); border-radius: 10px; padding: 3px; flex-shrink: 0; }
+.aba {
+  flex: 1;
+  padding: 8px 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cinza);
+  cursor: pointer;
+}
+.aba.ativa { background: #fff; color: var(--verde); font-weight: 600; }
+
+/* Menu de baixo */
+.menu {
+  display: flex;
+  justify-content: space-between;
+  background: #fff;
+  border-top: 1px solid var(--borda);
+  padding: 10px 8px 24px;
+  flex-shrink: 0;
+}
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 16px;
+  color: var(--cinza);
+  font-size: 11px;
+  text-decoration: none;
+}
+.menu-icone { width: 24px; height: 24px; display: flex; }
+.menu-icone svg { width: 24px; height: 24px; }
+.menu-item.ativo { color: var(--verde); font-weight: 600; }
+
+/* Perfil */
+.perfil-topo { display: flex; align-items: center; gap: 14px; }
+.avatar { width: 64px; height: 64px; border-radius: 32px; background: #86c766; flex-shrink: 0; }
+.perfil-nome { margin: 0; font-size: 18px; font-weight: 700; }
+.perfil-email { margin: 2px 0 0; font-size: 13px; color: var(--cinza); }
+.veiculo-titulo { display: flex; justify-content: space-between; align-items: center; }
+.veiculo-titulo p { margin: 0; font-size: 14px; font-weight: 600; }
+.veiculo-titulo button { background: none; border: 0; padding: 0; color: var(--verde); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.veiculo-texto { margin: 0; font-size: 13px; color: var(--cinza); }
+
+/* Mensagens */
+.erro { margin: 0; font-size: 13px; color: var(--vermelho); }
+.sucesso { margin: 0; font-size: 13px; color: var(--verde); font-weight: 500; }
+.vazio { margin: 0; font-size: 14px; color: var(--cinza); text-align: center; padding: 16px 0; }

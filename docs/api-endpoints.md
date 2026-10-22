@@ -29,8 +29,8 @@ Como o MVP não envia e-mail de verdade, a resposta do cadastro traz o `link_con
 | GET | `/perfil` | Sim | Dados do usuário logado | 401 sem login |
 | PUT | `/perfil` | Sim | Altera nome, curso e telefone (RF04) | Validações de nome, curso e telefone: 422 |
 | GET | `/veiculos` | Sim | Lista os meus veículos | |
-| POST | `/veiculos` | Sim | Cadastra veículo (RF05) | Veículo com 2 a 8 lugares: 422 |
-| PUT | `/veiculos/{id}` | Sim | Altera um veículo meu | Veículo de outra pessoa ou inexistente: 404 |
+| POST | `/veiculos` | Sim | Cadastra veículo com modelo, cor, placa e lugares (RF05) | Veículo com 2 a 8 lugares: 422. Placa fora do padrão `ABC1234` ou `ABC1D23`: 422 "Placa inválida. Use ABC-1234 ou ABC1D23" (aceita hífen e minúsculas e grava sem hífen, em maiúsculas). Placa já cadastrada: 409 |
+| PUT | `/veiculos/{id}` | Sim | Altera um veículo meu | Veículo de outra pessoa ou inexistente: 404. Mesmas validações da placa |
 | DELETE | `/veiculos/{id}` | Sim | Exclui um veículo meu | Veículo já usado em caronas: 409 |
 | GET | `/locais` | Não | Lista os locais (bairros e campus) para saída e destino | |
 
@@ -38,9 +38,9 @@ Como o MVP não envia e-mail de verdade, a resposta do cadastro traz o `link_con
 
 | Método | Caminho | Login | O que faz | Regras e erros |
 |--------|---------|:-----:|-----------|----------------|
-| POST | `/caronas` | Sim | Publica uma carona (RF06) | RN02: sem veículo, 409 "Cadastre um veículo no seu perfil...". RN03: de 1 a 4 vagas (422). RN04: saída com pelo menos 1 hora de antecedência (422 "Informe um horário futuro"). Saída diferente do destino (422) |
-| GET | `/caronas?origem_id=&destino_id=&horario=` | Sim | Busca caronas abertas com saída até 30 minutos antes ou depois do horário (RF07) | Parâmetro faltando ou data inválida: 422. Lista vazia quando não acha nada (o frontend mostra "Nenhuma carona encontrada") |
-| GET | `/caronas/{id}` | Sim | Detalhes da carona (RF08) | Inexistente: 404. RN10: `telefone_motorista` só vem depois que o meu pedido é aceito |
+| POST | `/caronas` | Sim | Publica uma carona (RF06) | RN02: sem veículo, 409 "Cadastre um veículo no seu perfil...". RN03: de 1 a 4 vagas (422). RN04: saída com pelo menos 1 hora de antecedência (422 "Informe um horário futuro"). Saída diferente do destino (422). RN14: o Campus Univille precisa ser a saída ou o destino, nunca bairro com bairro (422 "A carona precisa ter o Campus Univille como saída ou destino") |
+| GET | `/caronas?origem_id=&destino_id=&horario=` | Sim | Busca caronas abertas de outros motoristas, com saída até 30 minutos antes ou depois do horário (RF07) | Parâmetro faltando ou data inválida: 422. Lista vazia quando não acha nada (o frontend mostra "Nenhuma carona encontrada") |
+| GET | `/caronas/{id}` | Sim | Detalhes da carona (RF08) | Inexistente: 404. RN10: `telefone_motorista` e `veiculo_placa` só vêm depois que o meu pedido é aceito (o motorista sempre vê a própria placa) |
 | POST | `/caronas/{id}/solicitacoes` | Sim | Pede uma vaga (RF09) | RN05: não pode na própria carona (409). RN06: um pedido ativo por carona (409). Lotada: 409 "Carona lotada". Cancelada ou concluída: 409 |
 
 ## 4. Solicitações (US04)
@@ -56,7 +56,7 @@ Como o MVP não envia e-mail de verdade, a resposta do cadastro traz o `link_con
 | Método | Caminho | Login | O que faz | Regras e erros |
 |--------|---------|:-----:|-----------|----------------|
 | GET | `/minhas/oferecidas` | Sim | Caronas que eu ofereci, com a quantidade de pedidos pendentes (RF14) | |
-| GET | `/minhas/solicitadas` | Sim | Caronas que eu pedi, com o status de cada pedido (RF14) | |
+| GET | `/minhas/solicitadas` | Sim | Caronas que eu pedi, com o status de cada pedido e o modelo e a cor do veículo (RF14) | RN10: `telefone_motorista` e `veiculo_placa` só vêm nos pedidos confirmados |
 | POST | `/solicitacoes/{id}/cancelar` | Sim | O passageiro cancela o pedido (RF12) | RN08: só até 2 horas antes da saída (409 "Prazo de cancelamento encerrado"). Se estava confirmado, a vaga volta |
 | POST | `/caronas/{id}/cancelar` | Sim | O motorista cancela a carona (RF13) | Só o motorista (403). RN08: prazo de 2 horas (409). RN09: todos os pedidos pendentes e confirmados viram "Cancelada" |
 
@@ -135,7 +135,16 @@ Resposta `200`:
   }
 ]
 ```
-O detalhe da carona (`GET /caronas/{id}`) devolve os mesmos campos mais `sou_motorista`, `minha_solicitacao_id`, `minha_solicitacao_status` e `telefone_motorista`.
+O detalhe da carona (`GET /caronas/{id}`) devolve os mesmos campos mais `sou_motorista`, `minha_solicitacao_id`, `minha_solicitacao_status`, `telefone_motorista` e `veiculo_placa`.
+
+**Cadastrar veículo:** `POST /veiculos`
+```json
+{ "modelo": "Fiat Argo", "cor": "Prata", "placa": "QJB-2E45", "lugares": 5 }
+```
+Resposta `201`:
+```json
+{ "id": 1, "modelo": "Fiat Argo", "cor": "Prata", "placa": "QJB2E45", "lugares": 5 }
+```
 
 **Erro:** `POST /auth/cadastro` com e-mail de outro domínio, resposta `422`:
 ```json
@@ -149,4 +158,4 @@ O detalhe da carona (`GET /caronas/{id}`) devolve os mesmos campos mais `sou_mot
 
 ## Usuários de teste (dados iniciais do `seed.sql`)
 
-Todos com a senha `senha1234`: `lucas@univille.br` (tem veículo), `maria@univille.br` e `joao@univille.br`.
+Todos com a senha `senha1234`: `lucas@univille.br` (tem veículo, placa `QJB2E45`), `maria@univille.br` e `joao@univille.br`.

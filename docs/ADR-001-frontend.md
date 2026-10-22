@@ -36,6 +36,6 @@ Usar **React com Vite** para construir o frontend como uma aplicação web respo
 
 - Substitui: nenhum
 
-- Relacionado: ADR-004 (backend), protótipos no Figma (docs/03-prototipos.md)
+- Relacionado: [ADR-004](ADR-004-backend.md) (backend), [protótipos no Figma](https://www.figma.com/design/SCf876FNOK081GMjxVszv8)
 
 - Evidências: https://www.figma.com/design/SCf876FNOK081GMjxVszv8

@@ -6,7 +6,7 @@
 
 O Caroville é voltado só para estudantes da Univille. Como envolve encontrar pessoas e dividir o carro, é importante saber que o usuário é realmente do meio universitário.
 
-O sistema também precisa proteger as senhas (RNF06), limitar tentativas de login (RNF07) e esconder o telefone até a carona ser aceita (RNF08).
+O sistema também precisa proteger as senhas (RNF06), limitar tentativas de login (RNF07) e esconder o telefone e a placa do veículo até a carona ser aceita (RNF08).
 
 ## Decisão
 
@@ -17,6 +17,8 @@ O sistema também precisa proteger as senhas (RNF06), limitar tentativas de logi
 - Após o login, o usuário recebe um **token JWT** com validade curta, enviado em cada requisição à API.
 
 - Bloqueio do login por 15 minutos após 5 senhas erradas seguidas.
+
+- No MVP o e-mail de verificação é **simulado**: o link de confirmação aparece no terminal do backend e na resposta do cadastro, e a tela de cadastro tem um botão para confirmar. O envio real fica para quando o sistema for hospedado ([ADR-003](ADR-003-execucao-local.md)).
 
 ## Consequências
 
@@ -30,7 +32,7 @@ O sistema também precisa proteger as senhas (RNF06), limitar tentativas de logi
 
 (-) Token roubado vale até expirar, por isso a validade precisa ser curta.
 
-(-) É preciso configurar o envio de e-mail para a verificação.
+(-) Para usuários reais, é preciso configurar um serviço de envio de e-mail. No MVP isso foi adiado e o envio é simulado.
 
 ## Alternativas rejeitadas
 
@@ -44,6 +46,6 @@ O sistema também precisa proteger as senhas (RNF06), limitar tentativas de logi
 
 - Substitui: nenhum
 
-- Relacionado: ADR-004, RN01, RNF06, RNF07, RNF08
+- Relacionado: [ADR-004](ADR-004-backend.md), [RN01](01-requisitos-funcionais.md), [RNF06, RNF07 e RNF08](02-requisitos-nao-funcionais.md)
 
 - Evidências: https://jwt.io/introduction

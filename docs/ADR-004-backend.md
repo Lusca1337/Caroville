@@ -4,7 +4,7 @@
 
 ## Contexto
 
-O sistema precisa de uma API que valide as regras de negócio (vagas, solicitações, cancelamento), converse com o banco de dados e envie e-mails.
+O sistema precisa de uma API que valide as regras de negócio (vagas, solicitações, cancelamento), converse com o banco de dados e envie e-mails. No MVP o envio de e-mail é simulado: a mensagem aparece no terminal do backend (ver [ADR-005](ADR-005-autenticacao.md)).
 
 A equipe é pequena, ainda está aprendendo e precisa entregar o MVP em pouco tempo, então a linguagem precisa ser simples de ler e exigir pouca configuração.
 
@@ -40,6 +40,6 @@ Usar **Python com FastAPI** para construir a API REST do Caroville.
 
 - Substitui: versão anterior deste ADR (Node.js com Express)
 
-- Relacionado: ADR-001, ADR-002, ADR-005
+- Relacionado: [ADR-001](ADR-001-frontend.md), [ADR-002](ADR-002-banco-de-dados.md), [ADR-005](ADR-005-autenticacao.md), [endpoints da API](api-endpoints.md)
 
 - Evidências: https://fastapi.tiangolo.com/

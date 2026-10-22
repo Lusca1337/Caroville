@@ -9,19 +9,21 @@
 ## Disponibilidade
 | ID | Requisito |
 |----|-----------|
-| RNF03 | O sistema fica no ar pelo menos 99% do mês. |
-| RNF04 | O banco de dados tem backup automático todo dia. |
+| RNF03 | O sistema fica no ar pelo menos 99% do mês. * |
+| RNF04 | O banco de dados tem backup automático todo dia. * |
 
 ## Segurança
 | ID | Requisito |
 |----|-----------|
-| RNF05 | Todo acesso é por HTTPS. |
+| RNF05 | Todo acesso é por HTTPS. * |
 | RNF06 | As senhas são guardadas criptografadas (bcrypt), nunca em texto puro. |
 | RNF07 | Depois de 5 senhas erradas seguidas, o login fica bloqueado por 15 minutos. |
-| RNF08 | O telefone de motorista e passageiro só aparece depois que a carona é aceita. |
+| RNF08 | O telefone de motorista e passageiro e a placa do veículo só aparecem depois que a carona é aceita. |
 
 ## Usabilidade
 | ID | Requisito |
 |----|-----------|
 | RNF09 | Publicar uma carona leva no máximo 1 minuto e 2 telas. |
 | RNF10 | A interface funciona em telas de 360 px até 1440 px, sem rolagem horizontal. |
+
+\* **Previsto para quando houver hospedagem.** No MVP o sistema roda localmente ([ADR-003](ADR-003-execucao-local.md)), em `http://localhost`, então RNF03, RNF04 e RNF05 ficam como metas para a etapa de hospedagem e não são verificados nos testes do MVP.

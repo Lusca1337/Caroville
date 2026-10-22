@@ -10,7 +10,7 @@ Também existem regras que precisam ser garantidas pelo sistema, como e-mail ún
 
 ## Decisão
 
-Usar o **PostgreSQL** como banco de dados do MVP, seguindo o modelo do DER (docs/05-modelagem-de-dados.md).
+Usar o **PostgreSQL** como banco de dados do MVP, seguindo o modelo do [DER](../README.md#modelagem-de-dados-der).
 
 ## Consequências
 
@@ -36,6 +36,6 @@ Usar o **PostgreSQL** como banco de dados do MVP, seguindo o modelo do DER (docs
 
 - Substitui: nenhum
 
-- Relacionado: ADR-004 (backend), DER (docs/05-modelagem-de-dados.md)
+- Relacionado: [ADR-004](ADR-004-backend.md) (backend), [DER](../README.md#modelagem-de-dados-der), [schema.sql](../backend/database/schema.sql)
 
 - Evidências: https://www.postgresql.org/docs/

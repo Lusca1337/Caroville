@@ -26,6 +26,8 @@ Rodar o sistema **localmente**, no computador da equipe, durante o MVP. O códig
 
 (-) Se o projeto continuar, será preciso escolher uma hospedagem e registrar em um novo ADR.
 
+(-) Os requisitos de disponibilidade e HTTPS (RNF03, RNF04 e RNF05) só podem ser cumpridos depois que o sistema for hospedado. No MVP eles ficam registrados como metas para essa etapa.
+
 ## Alternativas rejeitadas
 
 - Hospedagem em nuvem (Vercel, Render, AWS etc.): custo e configuração desnecessários para o escopo atual.
@@ -36,6 +38,6 @@ Rodar o sistema **localmente**, no computador da equipe, durante o MVP. O códig
 
 - Substitui: nenhum
 
-- Relacionado: ADR-001, ADR-002, ADR-004
+- Relacionado: [ADR-001](ADR-001-frontend.md), [ADR-002](ADR-002-banco-de-dados.md), [ADR-004](ADR-004-backend.md), [RNF03, RNF04 e RNF05](02-requisitos-nao-funcionais.md) (previstos para quando houver hospedagem)
 
-- Evidências: README.md do repositório
+- Evidências: [README.md](../README.md) do repositório

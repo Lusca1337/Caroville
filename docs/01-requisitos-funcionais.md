@@ -8,7 +8,7 @@
 | RF02 | O sistema deve confirmar o e-mail por link enviado ao endereço cadastrado. | US01 |
 | RF03 | O sistema deve permitir login e logout. | US01 |
 | RF04 | O usuário deve poder editar nome, curso e telefone. | US06 |
-| RF05 | O usuário deve poder cadastrar um veículo (modelo, cor, número de lugares). | US06 |
+| RF05 | O usuário deve poder cadastrar um veículo (modelo, cor, placa, número de lugares). | US06 |
 | RF06 | O motorista deve poder publicar uma carona com saída, destino, data/hora, vagas e observações. | US02 |
 | RF07 | O sistema deve buscar caronas por saída, destino e horário (janela de ±30 min). | US03 |
 | RF08 | O sistema deve exibir os detalhes de uma carona (motorista, veículo, ponto de encontro, vagas). | US03 |
@@ -17,9 +17,9 @@
 | RF11 | O sistema deve atualizar as vagas disponíveis a cada aceite ou cancelamento. | US04, US05 |
 | RF12 | O passageiro deve poder cancelar uma solicitação. | US05 |
 | RF13 | O motorista deve poder cancelar uma carona. | US05 |
-| RF14 | O usuário deve listar suas caronas oferecidas e solicitadas, com status. | US05 |
+| RF14 | Toda carona deve ter o Campus Univille como local de saída ou de destino; não é permitido oferecer carona entre dois bairros. | US05 |
 | RF15 | O sistema deve enviar e-mail quando uma solicitação for aceita, recusada ou cancelada. | US04, US05 |
-| RF16 | O sistema deve liberar o telefone do motorista e do passageiro somente após o aceite. | US04 |
+| RF16 | O sistema deve liberar o telefone do motorista e do passageiro, e a placa do veículo, somente após o aceite. | US04 |
 
 ## 1.2 Histórias de Usuário e Critérios de Aceite
 
@@ -104,7 +104,8 @@ Cenário: Aceitar solicitação
   Quando clico em "Aceitar"
   Então a solicitação passa para "Confirmada"
   E as vagas disponíveis diminuem em 1
-  E o passageiro recebe e-mail com meu telefone
+  E o passageiro recebe e-mail com meu telefone e a placa do veículo
+  E a placa passa a aparecer para o passageiro no detalhe da carona
 
 Cenário: Aceitar sem vagas
   Dado que a carona não tem vagas disponíveis
@@ -158,8 +159,13 @@ Cenário: Atualizar dados
 
 Cenário: Cadastrar veículo
   Dado que não tenho veículo
-  Quando informo modelo, cor e 4 lugares
+  Quando informo modelo, cor, placa e 4 lugares
   Então o veículo é salvo e posso publicar caronas
+
+Cenário: Placa inválida
+  Dado que estou cadastrando um veículo
+  Quando informo uma placa fora do padrão (ex.: "AB123")
+  Então vejo a mensagem "Placa inválida. Use ABC-1234 ou ABC1D23"
 ```
 
 ## 1.3 Regras de Negócio (RN)
@@ -175,7 +181,7 @@ Cenário: Cadastrar veículo
 | RN07 | Uma solicitação só pode ser aceita se houver vaga; ao aceitar, as vagas disponíveis diminuem em 1. |
 | RN08 | Cancelamentos (de carona ou de solicitação) só podem ser feitos até 2 horas antes da saída. |
 | RN09 | Ao cancelar uma carona, todas as solicitações pendentes e confirmadas passam a "Cancelada". |
-| RN10 | O telefone do motorista e do passageiro só é exibido entre os dois após o aceite. |
+| RN10 | O telefone do motorista e do passageiro, e a placa do veículo, só são exibidos entre os dois após o aceite. |
 | RN11 | Solicitações pendentes de caronas cuja saída já passou mudam automaticamente para "Expirada". |
 | RN12 | Um passageiro não pode ter duas caronas confirmadas com saídas a menos de 1 hora uma da outra. |
 | RN13 | Caronas com saída no passado e não canceladas passam para "Concluída". |

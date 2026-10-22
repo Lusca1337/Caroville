@@ -26,18 +26,21 @@ def editar_perfil(dados: PerfilEdicao, usuario=Depends(usuario_logado), db=Depen
 @router.get("/veiculos")
 def listar_veiculos(usuario=Depends(usuario_logado), db=Depends(get_db)):
     return db.execute(
-        "SELECT id, modelo, cor, lugares FROM veiculo WHERE usuario_id = %s ORDER BY id",
+        "SELECT id, modelo, cor, placa, lugares FROM veiculo WHERE usuario_id = %s ORDER BY id",
         (usuario["id"],),
     ).fetchall()
 
 
 @router.post("/veiculos", status_code=201)
 def criar_veiculo(dados: VeiculoDados, usuario=Depends(usuario_logado), db=Depends(get_db)):
-    veiculo = db.execute(
-        """INSERT INTO veiculo (usuario_id, modelo, cor, lugares)
-           VALUES (%s, %s, %s, %s) RETURNING id, modelo, cor, lugares""",
-        (usuario["id"], dados.modelo, dados.cor, dados.lugares),
-    ).fetchone()
+    try:
+        veiculo = db.execute(
+            """INSERT INTO veiculo (usuario_id, modelo, cor, placa, lugares)
+               VALUES (%s, %s, %s, %s, %s) RETURNING id, modelo, cor, placa, lugares""",
+            (usuario["id"], dados.modelo, dados.cor, dados.placa, dados.lugares),
+        ).fetchone()
+    except psycopg.errors.UniqueViolation:
+        raise HTTPException(409, "Esta placa já está cadastrada")
     return veiculo
 
 
@@ -45,11 +48,14 @@ def criar_veiculo(dados: VeiculoDados, usuario=Depends(usuario_logado), db=Depen
 def editar_veiculo(
     veiculo_id: int, dados: VeiculoDados, usuario=Depends(usuario_logado), db=Depends(get_db)
 ):
-    veiculo = db.execute(
-        """UPDATE veiculo SET modelo = %s, cor = %s, lugares = %s
-           WHERE id = %s AND usuario_id = %s RETURNING id, modelo, cor, lugares""",
-        (dados.modelo, dados.cor, dados.lugares, veiculo_id, usuario["id"]),
-    ).fetchone()
+    try:
+        veiculo = db.execute(
+            """UPDATE veiculo SET modelo = %s, cor = %s, placa = %s, lugares = %s
+               WHERE id = %s AND usuario_id = %s RETURNING id, modelo, cor, placa, lugares""",
+            (dados.modelo, dados.cor, dados.placa, dados.lugares, veiculo_id, usuario["id"]),
+        ).fetchone()
+    except psycopg.errors.UniqueViolation:
+        raise HTTPException(409, "Esta placa já está cadastrada")
     if veiculo is None:
         raise HTTPException(404, "Veículo não encontrado")
     return veiculo

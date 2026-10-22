@@ -98,6 +98,7 @@ class PerfilEdicao(BaseModel):
 class VeiculoDados(BaseModel):
     modelo: str
     cor: str
+    placa: str
     lugares: int
 
     @field_validator("modelo")
@@ -109,6 +110,15 @@ class VeiculoDados(BaseModel):
     @classmethod
     def v_cor(cls, v):
         return _texto(v, "a cor do veículo", 2, 30)
+
+    @field_validator("placa")
+    @classmethod
+    def v_placa(cls, v):
+        # Guarda sem hífen e em maiúsculas: "abc-1234" vira "ABC1234"
+        v = re.sub(r"[\s-]", "", v or "").upper()
+        if not re.fullmatch(r"[A-Z]{3}[0-9][A-Z0-9][0-9]{2}", v):
+            raise ValueError("Placa inválida. Use ABC-1234 ou ABC1D23")
+        return v
 
     @field_validator("lugares")
     @classmethod

@@ -25,8 +25,11 @@ CREATE TABLE veiculo (
     usuario_id INTEGER     NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,
     modelo     VARCHAR(60) NOT NULL,
     cor        VARCHAR(30) NOT NULL,
+    placa      VARCHAR(7)  NOT NULL UNIQUE,
     lugares    INTEGER     NOT NULL,
-    CONSTRAINT veiculo_lugares CHECK (lugares BETWEEN 2 AND 8)
+    CONSTRAINT veiculo_lugares CHECK (lugares BETWEEN 2 AND 8),
+    -- Placa sem hífen: padrão antigo (ABC1234) ou Mercosul (ABC1D23)
+    CONSTRAINT veiculo_placa CHECK (placa ~ '^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$')
 );
 
 CREATE TABLE local (

@@ -75,12 +75,15 @@ def oferecer_carona(
     if dados.saida_em < datetime.now() + timedelta(hours=HORAS_MIN_ANTECEDENCIA):  # RN04
         raise HTTPException(422, "Informe um horário futuro")
 
-    n = db.execute(
-        "SELECT count(*) AS n FROM local WHERE id IN (%s, %s)",
+    locais = db.execute(
+        "SELECT tipo FROM local WHERE id IN (%s, %s)",
         (dados.origem_id, dados.destino_id),
-    ).fetchone()["n"]
-    if n != 2:
+    ).fetchall()
+    if len(locais) != 2:
         raise HTTPException(422, "Local de saída ou de destino inválido")
+    # RN14: o Campus Univille tem que ser a saída ou o destino (e o outro lado, um bairro)
+    if [l["tipo"] for l in locais].count("CAMPUS") != 1:
+        raise HTTPException(422, "A carona precisa ter o Campus Univille como saída ou destino")
 
     carona = db.execute(
         """INSERT INTO carona (motorista_id, veiculo_id, origem_id, destino_id, saida_em,
@@ -102,16 +105,16 @@ def buscar_caronas(
     usuario=Depends(usuario_logado),
     db=Depends(db_atualizado),
 ):
-    """RF07: caronas abertas com saída até 30 minutos antes ou depois do horário."""
+    """RF07: caronas abertas de outros motoristas, com saída até 30 minutos antes ou depois do horário."""
     if horario.tzinfo is not None:
         horario = horario.astimezone().replace(tzinfo=None)
     janela = timedelta(minutes=JANELA_BUSCA_MINUTOS)
     return db.execute(
         BASE_SELECT
         + """ WHERE c.status = 'ABERTA' AND c.origem_id = %s AND c.destino_id = %s
-                AND c.saida_em BETWEEN %s AND %s
+                AND c.saida_em BETWEEN %s AND %s AND c.motorista_id <> %s
               ORDER BY c.saida_em""",
-        (origem_id, destino_id, horario - janela, horario + janela),
+        (origem_id, destino_id, horario - janela, horario + janela, usuario["id"]),
     ).fetchall()
 
 
@@ -132,12 +135,20 @@ def ver_carona(carona_id: int, usuario=Depends(usuario_logado), db=Depends(db_at
     carona["minha_solicitacao_id"] = minha["id"] if minha else None
     carona["minha_solicitacao_status"] = minha["status"] if minha else None
 
-    # RN10: o telefone do motorista só aparece depois do aceite
+    # RN10: o telefone do motorista e a placa do carro só aparecem depois do aceite
     carona["telefone_motorista"] = None
-    if minha and minha["status"] == "CONFIRMADA":
-        carona["telefone_motorista"] = db.execute(
-            "SELECT telefone FROM usuario WHERE id = %s", (carona["motorista_id"],)
-        ).fetchone()["telefone"]
+    carona["veiculo_placa"] = None
+    if carona["sou_motorista"] or (minha and minha["status"] == "CONFIRMADA"):
+        contato = db.execute(
+            """SELECT u.telefone, v.placa FROM carona c
+               JOIN usuario u ON u.id = c.motorista_id
+               JOIN veiculo v ON v.id = c.veiculo_id
+               WHERE c.id = %s""",
+            (carona_id,),
+        ).fetchone()
+        carona["veiculo_placa"] = contato["placa"]
+        if not carona["sou_motorista"]:
+            carona["telefone_motorista"] = contato["telefone"]
     return carona
 
 
@@ -256,9 +267,13 @@ def aceitar_solicitacao(
         "UPDATE carona SET vagas_disponiveis = %s, status = %s WHERE id = %s",
         (vagas, "LOTADA" if vagas == 0 else carona["status"], carona["id"]),
     )
+    veiculo = db.execute(
+        "SELECT modelo, cor, placa FROM veiculo WHERE id = %s", (carona["veiculo_id"],)
+    ).fetchone()
     avisar(
         solicitacao["email"],
-        f"Sua solicitação foi aceita! Telefone do motorista {usuario['nome']}: {usuario['telefone']}",
+        f"Sua solicitação foi aceita! Telefone do motorista {usuario['nome']}: {usuario['telefone']}. "
+        f"Veículo: {veiculo['modelo']} {veiculo['cor'].lower()}, placa {veiculo['placa']}",
     )
     return {"mensagem": "Solicitação aceita"}
 
@@ -301,10 +316,13 @@ def minhas_solicitadas(usuario=Depends(usuario_logado), db=Depends(db_atualizado
         """SELECT s.id AS solicitacao_id, s.status AS solicitacao_status,
                   c.id AS carona_id, c.saida_em, c.status AS carona_status,
                   o.nome AS origem, d.nome AS destino, u.nome AS motorista_nome,
-                  CASE WHEN s.status = 'CONFIRMADA' THEN u.telefone END AS telefone_motorista
+                  v.modelo AS veiculo_modelo, v.cor AS veiculo_cor,
+                  CASE WHEN s.status = 'CONFIRMADA' THEN u.telefone END AS telefone_motorista,
+                  CASE WHEN s.status = 'CONFIRMADA' THEN v.placa END AS veiculo_placa
            FROM solicitacao s
            JOIN carona c ON c.id = s.carona_id
            JOIN usuario u ON u.id = c.motorista_id
+           JOIN veiculo v ON v.id = c.veiculo_id
            JOIN local o ON o.id = c.origem_id
            JOIN local d ON d.id = c.destino_id
            WHERE s.passageiro_id = %s ORDER BY c.saida_em DESC, s.id DESC""",
