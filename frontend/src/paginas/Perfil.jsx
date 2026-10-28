@@ -4,7 +4,7 @@ import { api, apagarToken } from "../api";
 import Tela from "../componentes/Tela.jsx";
 import { Campo } from "../componentes/Campos.jsx";
 import {
-  MSG_PLACA, MSG_TELEFONE, mascaraPlaca, mascaraTelefone, placaParaTela, placaValida, telefoneParaTela, telefoneValido,
+  MSG_PLACA, erroTelefone, mascaraPlaca, mascaraTelefone, placaParaTela, placaValida, telefoneParaTela, textoVagas,
 } from "../util";
 
 // Tela 08 - Perfil e veículo (US06, RF04 e RF05)
@@ -16,7 +16,7 @@ export default function Perfil() {
   const [telefone, setTelefone] = useState("");
   const [veiculo, setVeiculo] = useState(null); // primeiro veículo do usuário, se existir
   const [editandoVeiculo, setEditandoVeiculo] = useState(false);
-  const [formVeiculo, setFormVeiculo] = useState({ modelo: "", cor: "", placa: "", lugares: 4 });
+  const [formVeiculo, setFormVeiculo] = useState({ modelo: "", cor: "", placa: "", vagas: 4 });
   const [erro, setErro] = useState("");
   const [aviso, setAviso] = useState("");
 
@@ -42,7 +42,7 @@ export default function Perfil() {
     setAviso("");
     if (nome.trim().length < 2) return setErro("Informe o nome");
     if (curso.trim().length < 2) return setErro("Informe o curso");
-    if (!telefoneValido(telefone)) return setErro(MSG_TELEFONE);
+    if (erroTelefone(telefone)) return setErro(erroTelefone(telefone));
     try {
       const r = await api.put("/perfil", { nome, curso, telefone });
       setUsuario({ ...usuario, nome: nome.trim() });
@@ -53,7 +53,7 @@ export default function Perfil() {
   }
 
   function abrirFormVeiculo() {
-    if (veiculo) setFormVeiculo({ modelo: veiculo.modelo, cor: veiculo.cor, placa: veiculo.placa, lugares: veiculo.lugares });
+    if (veiculo) setFormVeiculo({ modelo: veiculo.modelo, cor: veiculo.cor, placa: veiculo.placa, vagas: veiculo.vagas });
     setEditandoVeiculo(true);
   }
 
@@ -61,7 +61,9 @@ export default function Perfil() {
     setErro("");
     setAviso("");
     if (!placaValida(formVeiculo.placa)) return setErro(MSG_PLACA);
-    const corpo = { ...formVeiculo, lugares: Number(formVeiculo.lugares) };
+    const vagas = Number(formVeiculo.vagas);
+    if (!Number.isInteger(vagas) || vagas < 1 || vagas > 4) return setErro("O veículo deve ter de 1 a 4 vagas para passageiros");
+    const corpo = { ...formVeiculo, vagas };
     try {
       const salvo = veiculo ? await api.put(`/veiculos/${veiculo.id}`, corpo) : await api.post("/veiculos", corpo);
       setVeiculo(salvo);
@@ -101,7 +103,7 @@ export default function Perfil() {
         <input className="entrada" value={curso} onChange={(e) => setCurso(e.target.value)} />
       </Campo>
       <Campo rotulo="Telefone (WhatsApp)">
-        <input className="entrada" type="tel" inputMode="numeric" maxLength={16} placeholder="(47) 9 9999-9999" value={telefone} onChange={(e) => setTelefone(mascaraTelefone(e.target.value))} />
+        <input className="entrada" type="tel" inputMode="numeric" maxLength={16} placeholder="(DDD) 9 9999-9999" value={telefone} onChange={(e) => setTelefone(mascaraTelefone(e.target.value))} />
       </Campo>
 
       <div className="cartao">
@@ -120,8 +122,10 @@ export default function Perfil() {
             <Campo rotulo="Placa">
               <input className="entrada" placeholder="Ex.: ABC1D23" maxLength={8} value={formVeiculo.placa} onChange={(e) => setFormVeiculo({ ...formVeiculo, placa: mascaraPlaca(e.target.value) })} />
             </Campo>
-            <Campo rotulo="Lugares (2 a 8)">
-              <input className="entrada" type="number" min="2" max="8" value={formVeiculo.lugares} onChange={(e) => setFormVeiculo({ ...formVeiculo, lugares: e.target.value })} />
+            <Campo rotulo="Vagas para passageiros (sem contar o motorista)">
+              <select className="entrada" value={formVeiculo.vagas} onChange={(e) => setFormVeiculo({ ...formVeiculo, vagas: e.target.value })}>
+                {[1, 2, 3, 4].map((n) => <option key={n} value={n}>{textoVagas(n)}</option>)}
+              </select>
             </Campo>
             <div className="acoes">
               <button className="botao botao-contorno" onClick={() => setEditandoVeiculo(false)}>Cancelar</button>
@@ -131,7 +135,7 @@ export default function Perfil() {
         ) : (
           <p className="veiculo-texto">
             {veiculo
-              ? `${veiculo.modelo} · ${veiculo.cor} · ${placaParaTela(veiculo.placa)} · ${veiculo.lugares} lugares`
+              ? `${veiculo.modelo} · ${veiculo.cor} · ${placaParaTela(veiculo.placa)} · ${textoVagas(veiculo.vagas)} para passageiros`
               : "Nenhum veículo cadastrado"}
           </p>
         )}

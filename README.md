@@ -9,8 +9,8 @@ Plataforma de caronas para estudantes da Univille. Conecta alunos que **oferecem
 
 O Caroville é uma aplicação web em que o aluno entra com o e-mail institucional (`@univille.br`) e pode:
 
-- **oferecer carona** (como motorista, com veículo cadastrado), sempre com o Campus Univille como saída ou destino;
-- **buscar carona** por saída, destino e horário e **solicitar uma vaga**;
+- **oferecer carona** (como motorista, com veículo cadastrado), sempre com o Campus Univille como saída ou destino, informando a rua no bairro;
+- **buscar carona** por saída, destino e dia e **solicitar uma vaga**;
 - **aceitar ou recusar** pedidos recebidos, e **cancelar** carona ou solicitação;
 - acompanhar tudo em **Minhas caronas** e manter o **perfil** e o veículo.
 
@@ -176,7 +176,7 @@ flowchart LR
 
 ## Escopo do MVP
 
-Cadastro e login com e-mail institucional, oferta de carona, busca por saída/destino/horário, solicitação, aceite ou recusa, cancelamento e perfil com veículo.
+Cadastro e login com e-mail institucional, oferta de carona, busca por saída/destino/dia, solicitação, aceite ou recusa, cancelamento e perfil com veículo.
 
 Fora do escopo do MVP: pagamento ou rateio de custos, chat interno, mapa com rotas em tempo real e avaliações entre usuários.
 
@@ -208,7 +208,7 @@ erDiagram
     string modelo
     string cor
     string placa UK
-    int lugares
+    int vagas "para passageiros, 1 a 4"
   }
   LOCAL {
     int id PK
@@ -222,6 +222,7 @@ erDiagram
     int origem_id FK
     int destino_id FK
     datetime saida_em
+    string rua "rua no bairro"
     int vagas_total
     int vagas_disponiveis
     string ponto_encontro

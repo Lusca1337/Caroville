@@ -8,10 +8,10 @@
 | RF02 | O sistema deve confirmar o e-mail por link enviado ao endereço cadastrado. | US01 |
 | RF03 | O sistema deve permitir login e logout. | US01 |
 | RF04 | O usuário deve poder editar nome, curso e telefone. | US06 |
-| RF05 | O usuário deve poder cadastrar um veículo (modelo, cor, placa, número de lugares). | US06 |
-| RF06 | O motorista deve poder publicar uma carona com saída, destino, data/hora, vagas e observações. | US02 |
-| RF07 | O sistema deve buscar caronas por saída, destino e horário (janela de ±30 min). | US03 |
-| RF08 | O sistema deve exibir os detalhes de uma carona (motorista, veículo, ponto de encontro, vagas). | US03 |
+| RF05 | O usuário deve poder cadastrar um veículo (modelo, cor, placa e vagas para passageiros, de 1 a 4). | US06 |
+| RF06 | O motorista deve poder publicar uma carona com saída, destino, rua no bairro, data/hora, vagas e observações. | US02 |
+| RF07 | O sistema deve buscar caronas por saída, destino e dia, mostrando todas as caronas do dia em ordem de horário. | US03 |
+| RF08 | O sistema deve exibir os detalhes de uma carona (motorista, veículo, rua, ponto de encontro, vagas). | US03 |
 | RF09 | O passageiro deve poder solicitar uma vaga em uma carona. | US03 |
 | RF10 | O motorista deve poder aceitar ou recusar solicitações pendentes. | US04 |
 | RF11 | O sistema deve atualizar as vagas disponíveis a cada aceite ou cancelamento. | US04, US05 |
@@ -48,12 +48,12 @@ Cenário: Login sem e-mail confirmado
 
 ### US02 - Oferecer carona
 **Como** motorista, **quero** publicar uma carona **para** dividir meu trajeto com colegas.
-Tela: 05 Oferecer carona. RFs: RF06. RNs: RN02, RN03, RN04.
+Tela: 05 Oferecer carona. RFs: RF06. RNs: RN02, RN03, RN04, RN15.
 
 ```gherkin
 Cenário: Publicar carona válida
   Dado que estou logado e tenho um veículo cadastrado
-  Quando informo saída, destino, horário futuro e 3 vagas e clico em "Publicar carona"
+  Quando informo saída, destino, a rua no bairro, horário futuro e 3 vagas e clico em "Publicar carona"
   Então a carona aparece em "Minhas caronas > Oferecidas" com status "Aberta"
 
 Cenário: Publicar sem veículo
@@ -65,6 +65,11 @@ Cenário: Horário no passado
   Dado que estou no formulário de oferta
   Quando informo um horário com menos de 1 hora de antecedência
   Então vejo a mensagem "Informe um horário futuro" e a carona não é criada
+
+Cenário: Mais vagas do que o veículo tem
+  Dado que meu veículo tem 2 vagas para passageiros
+  Quando tento publicar uma carona com 3 vagas
+  Então vejo a mensagem "Seu veículo tem 2 vagas para passageiros" e a carona não é criada
 ```
 
 ### US03 - Buscar e solicitar carona
@@ -73,12 +78,12 @@ Telas: 03 Buscar caronas, 04 Detalhe da carona. RFs: RF07, RF08, RF09. RNs: RN05
 
 ```gherkin
 Cenário: Buscar caronas compatíveis
-  Dado que existem caronas abertas com saída "Costa e Silva" às 18:00
-  Quando busco saída "Costa e Silva", destino "Campus Univille" e horário 18:15
-  Então vejo a carona das 18:00 na lista de resultados
+  Dado que existem caronas abertas com saída "Costa e Silva" às 07:00 e às 18:00 do dia 20/10
+  Quando busco saída "Costa e Silva", destino "Campus Univille" e dia 20/10
+  Então vejo as duas caronas na lista, a das 07:00 primeiro
 
 Cenário: Nenhum resultado
-  Dado que não há caronas na janela de ±30 min
+  Dado que não há caronas abertas no dia escolhido
   Quando realizo a busca
   Então vejo "Nenhuma carona encontrada"
 
@@ -149,7 +154,7 @@ Cenário: Motorista cancela carona com passageiros
 
 ### US06 - Perfil e veículo
 **Como** usuário, **quero** manter meus dados e meu veículo atualizados **para** que os colegas confiem na carona.
-Tela: 08 Perfil. RFs: RF04, RF05. RN: RN03.
+Tela: 08 Perfil. RFs: RF04, RF05. RNs: RN03, RN15.
 
 ```gherkin
 Cenário: Atualizar dados
@@ -159,7 +164,7 @@ Cenário: Atualizar dados
 
 Cenário: Cadastrar veículo
   Dado que não tenho veículo
-  Quando informo modelo, cor, placa e 4 lugares
+  Quando informo modelo, cor, placa e 4 vagas para passageiros
   Então o veículo é salvo e posso publicar caronas
 
 Cenário: Placa inválida
@@ -185,6 +190,7 @@ Cenário: Placa inválida
 | RN11 | Solicitações pendentes de caronas cuja saída já passou mudam automaticamente para "Expirada". |
 | RN12 | Um passageiro não pode ter duas caronas confirmadas com saídas a menos de 1 hora uma da outra. |
 | RN13 | Caronas com saída no passado e não canceladas passam para "Concluída". |
+| RN15 | O número de vagas de uma carona não pode passar das vagas para passageiros do veículo (de 1 a 4, sem contar o motorista). |
 
 ### Status
 - **Carona:** Aberta, Lotada, Cancelada, Concluída.

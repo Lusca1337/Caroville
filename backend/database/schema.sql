@@ -26,8 +26,9 @@ CREATE TABLE veiculo (
     modelo     VARCHAR(60) NOT NULL,
     cor        VARCHAR(30) NOT NULL,
     placa      VARCHAR(7)  NOT NULL UNIQUE,
-    lugares    INTEGER     NOT NULL,
-    CONSTRAINT veiculo_lugares CHECK (lugares BETWEEN 2 AND 8),
+    -- Vagas para passageiros, sem contar o motorista (RN03 e RN15)
+    vagas      INTEGER     NOT NULL,
+    CONSTRAINT veiculo_vagas CHECK (vagas BETWEEN 1 AND 4),
     -- Placa sem hífen: padrão antigo (ABC1234) ou Mercosul (ABC1D23)
     CONSTRAINT veiculo_placa CHECK (placa ~ '^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$')
 );
@@ -46,6 +47,8 @@ CREATE TABLE carona (
     origem_id         INTEGER      NOT NULL REFERENCES local(id),
     destino_id        INTEGER      NOT NULL REFERENCES local(id),
     saida_em          TIMESTAMP    NOT NULL,
+    -- Rua no bairro: de onde sai (bairro -> campus) ou aonde chega (campus -> bairro)
+    rua               VARCHAR(120) NOT NULL,
     vagas_total       INTEGER      NOT NULL,
     vagas_disponiveis INTEGER      NOT NULL,
     ponto_encontro    VARCHAR(120),

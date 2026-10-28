@@ -61,6 +61,7 @@ export default function Detalhe() {
       <div className="cartao cartao-grande">
         <p className="hora-grande">{dataEHora(carona.saida_em)}</p>
         <p className="rota rota-grande">{carona.origem}  →  {carona.destino}</p>
+        <p className="detalhe detalhe-grande">Rua: {carona.rua}</p>
         {carona.ponto_encontro && <p className="detalhe detalhe-grande">Ponto de encontro: {carona.ponto_encontro}</p>}
         <p className="detalhe detalhe-grande">Motorista: {nomeAbreviado(carona.motorista_nome)}</p>
         <p className="detalhe detalhe-grande">

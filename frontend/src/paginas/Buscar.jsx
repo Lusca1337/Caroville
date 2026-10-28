@@ -4,14 +4,14 @@ import { api } from "../api";
 import Tela from "../componentes/Tela.jsx";
 import { Campo, Chip } from "../componentes/Campos.jsx";
 import Trajeto from "../componentes/Trajeto.jsx";
-import { agoraParaCampo, horaCurta, horarioPadrao, nomeAbreviado, textoVagas } from "../util";
+import { hojeParaCampo, horaCurta, nomeAbreviado, textoVagas } from "../util";
 
 // Tela 03 - Buscar caronas (US03, RF07)
 export default function Buscar() {
   const [locais, setLocais] = useState([]);
   const [origemId, setOrigemId] = useState("");
   const [destinoId, setDestinoId] = useState("");
-  const [horario, setHorario] = useState(horarioPadrao());
+  const [data, setData] = useState(hojeParaCampo());
   const [resultados, setResultados] = useState(null); // null = ainda não buscou
   const [erro, setErro] = useState("");
   const [buscando, setBuscando] = useState(false);
@@ -29,10 +29,11 @@ export default function Buscar() {
     evento.preventDefault();
     setErro("");
     if (!origemId || !destinoId) return setErro("Escolha o local de saída e o destino");
-    if (horario < agoraParaCampo()) return setErro("Escolha uma data e horário de hoje em diante");
+    if (!data) return setErro("Escolha o dia");
+    if (data < hojeParaCampo()) return setErro("Escolha um dia de hoje em diante");
     setBuscando(true);
     try {
-      const params = new URLSearchParams({ origem_id: origemId, destino_id: destinoId, horario });
+      const params = new URLSearchParams({ origem_id: origemId, destino_id: destinoId, data });
       setResultados(await api.get("/caronas?" + params));
     } catch (e) {
       setErro(e.message);
@@ -50,8 +51,8 @@ export default function Buscar() {
           destinoId={destinoId}
           aoMudar={(origem, destino) => { setOrigemId(origem); setDestinoId(destino); }}
         />
-        <Campo rotulo="Horário">
-          <input className="entrada" type="datetime-local" min={agoraParaCampo()} value={horario} onChange={(e) => setHorario(e.target.value)} required />
+        <Campo rotulo="Dia">
+          <input className="entrada" type="date" min={hojeParaCampo()} value={data} onChange={(e) => setData(e.target.value)} required />
         </Campo>
         {erro && <p className="erro">{erro}</p>}
         <button className="botao" type="submit" disabled={buscando}>
@@ -70,6 +71,7 @@ export default function Buscar() {
                 <Chip>{textoVagas(c.vagas_disponiveis)}</Chip>
               </div>
               <p className="rota">{c.origem}  →  {c.destino}</p>
+              <p className="detalhe">{c.rua}</p>
               <p className="detalhe">{nomeAbreviado(c.motorista_nome)} · {c.veiculo_modelo}</p>
             </Link>
           ))}

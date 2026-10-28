@@ -17,10 +17,20 @@ def _texto(valor: str, campo: str, minimo: int, maximo: int) -> str:
     return valor
 
 
+# DDDs que existem no Brasil (qualquer estado, não só o 47 de Joinville)
+DDDS_VALIDOS = {
+    11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 24, 27, 28, 31, 32, 33, 34, 35, 37, 38,
+    41, 42, 43, 44, 45, 46, 47, 48, 49, 51, 53, 54, 55, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+    71, 73, 74, 75, 77, 79, 81, 82, 83, 84, 85, 86, 87, 88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99,
+}
+
+
 def _telefone(valor: str) -> str:
     digitos = re.sub(r"\D", "", valor or "")
     if len(digitos) not in (10, 11):
-        raise ValueError("Telefone inválido. Use DDD + número, ex.: (47) 90000-0000")
+        raise ValueError("Telefone inválido. Use DDD + número, ex.: (11) 9 9999-9999")
+    if int(digitos[:2]) not in DDDS_VALIDOS:
+        raise ValueError("DDD inválido")
     return valor.strip()
 
 
@@ -99,7 +109,7 @@ class VeiculoDados(BaseModel):
     modelo: str
     cor: str
     placa: str
-    lugares: int
+    vagas: int  # vagas para passageiros, sem contar o motorista
 
     @field_validator("modelo")
     @classmethod
@@ -120,11 +130,11 @@ class VeiculoDados(BaseModel):
             raise ValueError("Placa inválida. Use ABC-1234 ou ABC1D23")
         return v
 
-    @field_validator("lugares")
+    @field_validator("vagas")
     @classmethod
-    def v_lugares(cls, v):
-        if not 2 <= v <= 8:
-            raise ValueError("O veículo deve ter entre 2 e 8 lugares")
+    def v_vagas(cls, v):  # RN03
+        if not 1 <= v <= 4:
+            raise ValueError("O veículo deve ter de 1 a 4 vagas para passageiros")
         return v
 
 
@@ -133,6 +143,7 @@ class CaronaNova(BaseModel):
     origem_id: int
     destino_id: int
     saida_em: datetime
+    rua: str  # rua no bairro (saída ou chegada), para o passageiro achar a carona
     vagas_total: int
     ponto_encontro: Optional[str] = None
     observacoes: Optional[str] = None
@@ -144,6 +155,11 @@ class CaronaNova(BaseModel):
         if v.tzinfo is not None:
             v = v.astimezone().replace(tzinfo=None)
         return v
+
+    @field_validator("rua")
+    @classmethod
+    def v_rua(cls, v):
+        return _texto(v, "a rua", 3, 120)
 
     @field_validator("vagas_total")
     @classmethod

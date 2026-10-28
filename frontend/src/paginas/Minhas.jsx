@@ -69,6 +69,7 @@ export default function Minhas() {
                   {c.status === "CONCLUIDA" && <Chip tipo="cinza">Concluída</Chip>}
                 </div>
                 <p className="rota">{c.origem}  →  {c.destino}</p>
+                <p className="detalhe">{c.rua}</p>
                 <p className="detalhe">{resumo.join(" · ")}</p>
                 {ativa && <Link className="botao botao-contorno" to={`/carona/${c.id}/solicitacoes`}>Ver solicitações</Link>}
                 {ativa && (
@@ -94,6 +95,7 @@ export default function Minhas() {
                   <ChipStatus status={s.solicitacao_status} />
                 </div>
                 <p className="rota">{s.origem}  →  {s.destino}</p>
+                <p className="detalhe">{s.rua}</p>
                 <p className="detalhe">Motorista: {nomeAbreviado(s.motorista_nome)}</p>
                 <p className="detalhe">
                   Veículo: {s.veiculo_modelo}, {s.veiculo_cor.toLowerCase()}

@@ -1,20 +1,29 @@
 """US03 - Buscar carona e solicitar vaga (RF07, RF08, RF09; RN05, RN06, RN10)."""
 from datetime import timedelta
 
-from tests.conftest import agora, iso
+from tests.conftest import agora
 
 
-def buscar(usuario, origem, destino, horario):
-    return usuario.get("/caronas", params={"origem_id": origem, "destino_id": destino, "horario": iso(horario)})
+def buscar(usuario, origem, destino, quando):
+    """Busca pelo dia (só a data de 'quando' importa)."""
+    return usuario.get("/caronas", params={"origem_id": origem, "destino_id": destino, "data": quando.date().isoformat()})
 
 
-def test_busca_acha_carona_na_janela_de_30_minutos(motorista, passageiro, criar_carona, campus, bairro):
-    saida = agora() + timedelta(days=1, hours=3)
-    cid = criar_carona(motorista, saida)
-    for deslocamento, deve_achar in ((0, True), (25, True), (-25, True), (40, False), (-40, False)):
-        r = buscar(passageiro, bairro, campus, saida + timedelta(minutes=deslocamento))
+def test_busca_acha_as_caronas_do_dia_escolhido(motorista, passageiro, criar_carona, campus, bairro):
+    dia = (agora() + timedelta(days=5)).replace(hour=0, minute=0, second=0, microsecond=0)
+    cedo, tarde = criar_carona(motorista, dia + timedelta(hours=7)), criar_carona(motorista, dia + timedelta(hours=22))
+    for quando, deve_achar in ((dia, True), (dia - timedelta(days=1), False), (dia + timedelta(days=1), False)):
+        r = buscar(passageiro, bairro, campus, quando)
         assert r.status_code == 200
-        assert (cid in [c["id"] for c in r.json()]) is deve_achar, deslocamento
+        ids = [c["id"] for c in r.json()]
+        assert (cedo in ids and tarde in ids) is deve_achar, quando
+    ids = [c["id"] for c in buscar(passageiro, bairro, campus, dia).json()]
+    assert ids.index(cedo) < ids.index(tarde)  # da mais cedo para a mais tarde
+
+
+def test_busca_com_data_invalida(passageiro, campus, bairro):
+    r = passageiro.get("/caronas", params={"origem_id": bairro, "destino_id": campus, "data": "lixo"})
+    assert r.status_code == 422 and r.json()["detail"] == "Data ou horário inválido"
 
 
 def test_busca_filtra_por_saida_e_destino(motorista, passageiro, criar_carona, campus, bairro, outro_bairro):

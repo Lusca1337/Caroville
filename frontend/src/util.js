@@ -44,6 +44,9 @@ export function agoraParaCampo(horasAFrente = 0) {
   return paraCampo(new Date(Date.now() + horasAFrente * 3600000));
 }
 
+// Data de hoje no formato do campo date: "2026-10-20"
+export const hojeParaCampo = () => agoraParaCampo().slice(0, 10);
+
 // Valor inicial dos campos de data e hora: daqui a 2 horas, em hora cheia (a regra RN04 pede 1 hora de antecedência)
 export function horarioPadrao() {
   const d = new Date(Date.now() + 2 * 3600000);
@@ -51,8 +54,8 @@ export function horarioPadrao() {
   return paraCampo(d);
 }
 
-// Máscara do telefone enquanto a pessoa digita: (47) 9 9999-9999
-// Só aceita números e para nos 11 dígitos (DDD + celular com 9 dígitos).
+// Máscara do telefone enquanto a pessoa digita: (11) 9 9999-9999 (qualquer DDD e qualquer número)
+// Só aceita números e para nos 11 dígitos (DDD + número com 9 dígitos).
 export function mascaraTelefone(texto) {
   const d = (texto || "").replace(/\D/g, "").slice(0, 11);
   if (d.length === 0) return "";
@@ -63,9 +66,20 @@ export function mascaraTelefone(texto) {
   return r;
 }
 
-// Telefone completo no formato (47) 9 9999-9999 (o terceiro número é sempre 9, de celular)
-export const telefoneValido = (t) => /^\([1-9]\d\) 9 \d{4}-\d{4}$/.test(t);
-export const MSG_TELEFONE = "Telefone inválido. Use o formato (47) 9 9999-9999";
+// DDDs que existem no Brasil (a mesma lista do backend)
+const DDDS = new Set([
+  11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 24, 27, 28, 31, 32, 33, 34, 35, 37, 38,
+  41, 42, 43, 44, 45, 46, 47, 48, 49, 51, 53, 54, 55, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+  71, 73, 74, 75, 77, 79, 81, 82, 83, 84, 85, 86, 87, 88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99,
+]);
+
+// Confere o telefone no formato (DDD) 9 9999-9999 e devolve a mensagem do problema ("" se estiver certo).
+// Aceita DDD de qualquer estado e qualquer número, desde que siga a formatação.
+export function erroTelefone(t) {
+  if (!/^\(\d\d\) \d \d{4}-\d{4}$/.test(t)) return "Telefone incompleto. Use DDD + número, ex.: (11) 9 9999-9999";
+  if (!DDDS.has(Number(t.slice(1, 3)))) return "DDD inválido";
+  return "";
+}
 
 // Placa enquanto a pessoa digita: só letras e números, em maiúsculas, até 7 caracteres
 export const mascaraPlaca = (texto) => (texto || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7);

@@ -72,6 +72,22 @@ def test_telefone_aceita_10_ou_11_digitos_em_qualquer_formato(cliente):
         assert cliente.post("/auth/cadastro", json=dados(telefone=tel)).status_code == 201, tel
 
 
+def test_telefone_aceita_ddd_de_qualquer_estado(cliente):
+    for tel in ("(11) 9 8765-4321", "(21) 98765-4321", "(99) 9 1234-5678"):
+        assert cliente.post("/auth/cadastro", json=dados(telefone=tel)).status_code == 201, tel
+
+
+def test_telefone_com_ddd_inexistente(cliente):
+    for tel in ("(00) 9 8765-4321", "(20) 9 8765-4321", "(10) 9876-5432"):
+        r = cliente.post("/auth/cadastro", json=dados(telefone=tel))
+        assert r.status_code == 422 and r.json()["detail"] == "DDD inválido", tel
+
+
+def test_telefone_aceita_qualquer_numero_depois_do_ddd(cliente):
+    for tel in ("(55) 5 5555-5555", "(55) 9 5555-5555", "(11) 3 1234-5678"):
+        assert cliente.post("/auth/cadastro", json=dados(telefone=tel)).status_code == 201, tel
+
+
 def test_link_de_confirmacao_invalido(cliente):
     r = cliente.get("/auth/confirmar-email", params={"token": "lixo"})
     assert r.status_code == 400

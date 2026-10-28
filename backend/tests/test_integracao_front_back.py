@@ -37,11 +37,12 @@ def test_fluxo_completo_cadastro_ate_carona_confirmada(cliente, novo_usuario, ca
     from tests.conftest import agora, iso, placa, sql
 
     mot, pas = novo_usuario(), novo_usuario()
-    mot.post("/veiculos", json={"modelo": "Onix", "cor": "Azul", "placa": placa(), "lugares": 4})
+    mot.post("/veiculos", json={"modelo": "Onix", "cor": "Azul", "placa": placa(), "vagas": 4})
     saida = agora() + timedelta(days=3)
     cid = mot.post("/caronas", json={"origem_id": bairro, "destino_id": campus,
-                                     "saida_em": iso(saida), "vagas_total": 2}).json()["id"]
-    achadas = pas.get("/caronas", params={"origem_id": bairro, "destino_id": campus, "horario": iso(saida)}).json()
+                                     "saida_em": iso(saida), "rua": "Rua Blumenau, 50",
+                                     "vagas_total": 2}).json()["id"]
+    achadas = pas.get("/caronas", params={"origem_id": bairro, "destino_id": campus, "data": saida.date().isoformat()}).json()
     assert cid in [c["id"] for c in achadas]
     sid = pas.post(f"/caronas/{cid}/solicitacoes").json()["id"]
     assert mot.post(f"/solicitacoes/{sid}/aceitar").status_code == 200

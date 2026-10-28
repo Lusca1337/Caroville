@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { api, confirmarEmail } from "../api";
 import Tela from "../componentes/Tela.jsx";
 import { Campo } from "../componentes/Campos.jsx";
-import { MSG_TELEFONE, mascaraTelefone, telefoneValido } from "../util";
+import { erroTelefone, mascaraTelefone } from "../util";
 
 // Tela 02 - Cadastro (US01, RF01 e RF02)
 export default function Cadastro() {
@@ -19,7 +19,7 @@ export default function Cadastro() {
   async function cadastrar(evento) {
     evento.preventDefault();
     setErro("");
-    if (!telefoneValido(dados.telefone)) return setErro(MSG_TELEFONE);
+    if (erroTelefone(dados.telefone)) return setErro(erroTelefone(dados.telefone));
     setEnviando(true);
     try {
       const resposta = await api.post("/auth/cadastro", dados);
@@ -81,7 +81,7 @@ export default function Cadastro() {
           <input className="entrada" placeholder="Ex.: Ciência da Computação" value={dados.curso} onChange={mudar("curso")} required />
         </Campo>
         <Campo rotulo="Telefone (WhatsApp)">
-          <input className="entrada" type="tel" inputMode="numeric" maxLength={16} placeholder="(47) 9 9999-9999" value={dados.telefone} onChange={(e) => setDados({ ...dados, telefone: mascaraTelefone(e.target.value) })} required />
+          <input className="entrada" type="tel" inputMode="numeric" maxLength={16} placeholder="(DDD) 9 9999-9999" value={dados.telefone} onChange={(e) => setDados({ ...dados, telefone: mascaraTelefone(e.target.value) })} required />
         </Campo>
         <Campo rotulo="Senha">
           <input className="entrada" type="password" placeholder="Mínimo 8 caracteres" value={dados.senha} onChange={mudar("senha")} required />

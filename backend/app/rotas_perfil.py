@@ -26,7 +26,7 @@ def editar_perfil(dados: PerfilEdicao, usuario=Depends(usuario_logado), db=Depen
 @router.get("/veiculos")
 def listar_veiculos(usuario=Depends(usuario_logado), db=Depends(get_db)):
     return db.execute(
-        "SELECT id, modelo, cor, placa, lugares FROM veiculo WHERE usuario_id = %s ORDER BY id",
+        "SELECT id, modelo, cor, placa, vagas FROM veiculo WHERE usuario_id = %s ORDER BY id",
         (usuario["id"],),
     ).fetchall()
 
@@ -35,9 +35,9 @@ def listar_veiculos(usuario=Depends(usuario_logado), db=Depends(get_db)):
 def criar_veiculo(dados: VeiculoDados, usuario=Depends(usuario_logado), db=Depends(get_db)):
     try:
         veiculo = db.execute(
-            """INSERT INTO veiculo (usuario_id, modelo, cor, placa, lugares)
-               VALUES (%s, %s, %s, %s, %s) RETURNING id, modelo, cor, placa, lugares""",
-            (usuario["id"], dados.modelo, dados.cor, dados.placa, dados.lugares),
+            """INSERT INTO veiculo (usuario_id, modelo, cor, placa, vagas)
+               VALUES (%s, %s, %s, %s, %s) RETURNING id, modelo, cor, placa, vagas""",
+            (usuario["id"], dados.modelo, dados.cor, dados.placa, dados.vagas),
         ).fetchone()
     except psycopg.errors.UniqueViolation:
         raise HTTPException(409, "Esta placa já está cadastrada")
@@ -50,9 +50,9 @@ def editar_veiculo(
 ):
     try:
         veiculo = db.execute(
-            """UPDATE veiculo SET modelo = %s, cor = %s, placa = %s, lugares = %s
-               WHERE id = %s AND usuario_id = %s RETURNING id, modelo, cor, placa, lugares""",
-            (dados.modelo, dados.cor, dados.placa, dados.lugares, veiculo_id, usuario["id"]),
+            """UPDATE veiculo SET modelo = %s, cor = %s, placa = %s, vagas = %s
+               WHERE id = %s AND usuario_id = %s RETURNING id, modelo, cor, placa, vagas""",
+            (dados.modelo, dados.cor, dados.placa, dados.vagas, veiculo_id, usuario["id"]),
         ).fetchone()
     except psycopg.errors.UniqueViolation:
         raise HTTPException(409, "Esta placa já está cadastrada")

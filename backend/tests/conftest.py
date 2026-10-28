@@ -106,7 +106,7 @@ def _cadastrar(cliente, com_veiculo):
     usuario_id = sql("SELECT id FROM usuario WHERE email = %s", (email,))[0][0]
     u = Usuario(cliente, email, usuario_id, token)
     if com_veiculo:
-        r = u.post("/veiculos", json={"modelo": "Fiat Argo", "cor": "Prata", "placa": placa(), "lugares": 4})
+        r = u.post("/veiculos", json={"modelo": "Fiat Argo", "cor": "Prata", "placa": placa(), "vagas": 4})
         assert r.status_code == 201, r.text
     return u
 
@@ -139,7 +139,8 @@ def criar_carona(campus, bairro):
         quando = quando or agora() + timedelta(days=1)
         r = motorista.post("/caronas", json={
             "origem_id": origem or bairro, "destino_id": destino or campus,
-            "saida_em": iso(quando), "vagas_total": vagas, "ponto_encontro": "Praça central",
+            "saida_em": iso(quando), "rua": "Rua das Flores, 100",
+            "vagas_total": vagas, "ponto_encontro": "Praça central",
         })
         assert r.status_code == 201, r.text
         return r.json()["id"]

@@ -1,5 +1,5 @@
 """US02 a US05 - Caronas e solicitações (RF06 a RF16)."""
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -12,11 +12,10 @@ router = APIRouter(tags=["Caronas e solicitações"])
 
 HORAS_MIN_ANTECEDENCIA = 1    # RN04
 HORAS_PRAZO_CANCELAMENTO = 2  # RN08
-JANELA_BUSCA_MINUTOS = 30     # RF07
 
 # Consulta base: carona com nomes do motorista, do veículo e dos locais
 BASE_SELECT = """
-    SELECT c.id, c.saida_em, c.vagas_total, c.vagas_disponiveis, c.ponto_encontro,
+    SELECT c.id, c.saida_em, c.rua, c.vagas_total, c.vagas_disponiveis, c.ponto_encontro,
            c.observacoes, c.status, c.motorista_id, c.origem_id, c.destino_id,
            u.nome AS motorista_nome, v.modelo AS veiculo_modelo, v.cor AS veiculo_cor,
            o.nome AS origem, d.nome AS destino
@@ -63,14 +62,19 @@ def oferecer_carona(
     dados: CaronaNova, usuario=Depends(usuario_logado), db=Depends(db_atualizado)
 ):
     veiculos = db.execute(
-        "SELECT id FROM veiculo WHERE usuario_id = %s ORDER BY id", (usuario["id"],)
+        "SELECT id, vagas FROM veiculo WHERE usuario_id = %s ORDER BY id", (usuario["id"],)
     ).fetchall()
     if not veiculos:  # RN02
         raise HTTPException(409, "Cadastre um veículo no seu perfil antes de oferecer carona")
-    ids = [v["id"] for v in veiculos]
-    veiculo_id = dados.veiculo_id or ids[0]
-    if veiculo_id not in ids:
+    vagas_do_veiculo = {v["id"]: v["vagas"] for v in veiculos}
+    veiculo_id = dados.veiculo_id or veiculos[0]["id"]
+    if veiculo_id not in vagas_do_veiculo:
         raise HTTPException(404, "Veículo não encontrado")
+    maximo = vagas_do_veiculo[veiculo_id]
+    if dados.vagas_total > maximo:  # RN15
+        raise HTTPException(
+            422, f"Seu veículo tem {maximo} {'vaga' if maximo == 1 else 'vagas'} para passageiros"
+        )
 
     if dados.saida_em < datetime.now() + timedelta(hours=HORAS_MIN_ANTECEDENCIA):  # RN04
         raise HTTPException(422, "Informe um horário futuro")
@@ -86,10 +90,10 @@ def oferecer_carona(
         raise HTTPException(422, "A carona precisa ter o Campus Univille como saída ou destino")
 
     carona = db.execute(
-        """INSERT INTO carona (motorista_id, veiculo_id, origem_id, destino_id, saida_em,
+        """INSERT INTO carona (motorista_id, veiculo_id, origem_id, destino_id, saida_em, rua,
                                vagas_total, vagas_disponiveis, ponto_encontro, observacoes)
-           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id""",
-        (usuario["id"], veiculo_id, dados.origem_id, dados.destino_id, dados.saida_em,
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id""",
+        (usuario["id"], veiculo_id, dados.origem_id, dados.destino_id, dados.saida_em, dados.rua,
          dados.vagas_total, dados.vagas_total, dados.ponto_encontro, dados.observacoes),
     ).fetchone()
     return {"mensagem": "Carona publicada com sucesso", "id": carona["id"]}
@@ -101,20 +105,17 @@ def oferecer_carona(
 def buscar_caronas(
     origem_id: int,
     destino_id: int,
-    horario: datetime,
+    data: date,
     usuario=Depends(usuario_logado),
     db=Depends(db_atualizado),
 ):
-    """RF07: caronas abertas de outros motoristas, com saída até 30 minutos antes ou depois do horário."""
-    if horario.tzinfo is not None:
-        horario = horario.astimezone().replace(tzinfo=None)
-    janela = timedelta(minutes=JANELA_BUSCA_MINUTOS)
+    """RF07: caronas abertas de outros motoristas que saem no dia escolhido, da mais cedo para a mais tarde."""
     return db.execute(
         BASE_SELECT
         + """ WHERE c.status = 'ABERTA' AND c.origem_id = %s AND c.destino_id = %s
-                AND c.saida_em BETWEEN %s AND %s AND c.motorista_id <> %s
+                AND c.saida_em >= %s AND c.saida_em < %s AND c.motorista_id <> %s
               ORDER BY c.saida_em""",
-        (origem_id, destino_id, horario - janela, horario + janela, usuario["id"]),
+        (origem_id, destino_id, data, data + timedelta(days=1), usuario["id"]),
     ).fetchall()
 
 
@@ -314,7 +315,7 @@ def minhas_solicitadas(usuario=Depends(usuario_logado), db=Depends(db_atualizado
     """RF14: caronas que eu solicitei, com o status do meu pedido."""
     return db.execute(
         """SELECT s.id AS solicitacao_id, s.status AS solicitacao_status,
-                  c.id AS carona_id, c.saida_em, c.status AS carona_status,
+                  c.id AS carona_id, c.saida_em, c.rua, c.status AS carona_status,
                   o.nome AS origem, d.nome AS destino, u.nome AS motorista_nome,
                   v.modelo AS veiculo_modelo, v.cor AS veiculo_cor,
                   CASE WHEN s.status = 'CONFIRMADA' THEN u.telefone END AS telefone_motorista,
