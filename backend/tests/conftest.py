@@ -4,6 +4,7 @@ Os testes usam o banco configurado no .env (DATABASE_URL), que precisa ter o
 schema.sql e o seed.sql carregados (os locais vêm do seed). Cada teste cria os
 próprios usuários e caronas, e tudo isso é apagado ao final.
 """
+import os
 import random
 import string
 import uuid
@@ -13,8 +14,13 @@ import psycopg
 import pytest
 from fastapi.testclient import TestClient
 
-from app.config import DATABASE_URL
-from app.main import app
+# Os testes usam uma chave própria e o modo demonstração (o cadastro devolve o link de
+# confirmação). Precisa vir ANTES de importar o app. Banco: o DATABASE_URL do .env.
+os.environ["SECRET_KEY"] = "chave-so-para-testes-0123456789-abcdefghijklmnop"
+os.environ["MODO_DEMO"] = "true"
+
+from app.config import DATABASE_URL  # noqa: E402
+from app.main import app  # noqa: E402
 
 PREFIXO = "teste."
 SENHA = "senha1234"

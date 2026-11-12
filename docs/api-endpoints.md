@@ -20,7 +20,7 @@ Códigos de resposta usados: `200` e `201` (sucesso), `400` (link inválido), `4
 
 O logout não tem endpoint: o frontend apaga o token guardado.
 
-Como o MVP não envia e-mail de verdade, a resposta do cadastro traz o `link_confirmacao`, e o mesmo link aparece no terminal do backend.
+Como o MVP não envia e-mail de verdade, o link de confirmação aparece no terminal do backend. Só com `MODO_DEMO=true` a resposta do cadastro também traz o campo `link_confirmacao` (por segurança, veja VULN-01 em `relatorio-seguranca.md`).
 
 ## 2. Perfil e veículo (US06)
 
@@ -78,7 +78,7 @@ Os avisos por e-mail (RF15) são simulados e aparecem no terminal do backend.
   "senha": "minhasenha1"
 }
 ```
-Resposta `201`:
+Resposta `201` (o campo `link_confirmacao` só aparece com `MODO_DEMO=true`):
 ```json
 {
   "mensagem": "Conta criada! Confirme seu e-mail para entrar.",

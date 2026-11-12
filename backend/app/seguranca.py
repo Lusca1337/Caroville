@@ -17,8 +17,17 @@ def gerar_hash(senha: str) -> str:
     return bcrypt.hashpw(senha.encode(), bcrypt.gensalt(10)).decode()
 
 
+MAX_BYTES_SENHA = 72  # limite do bcrypt
+
+
 def senha_confere(senha: str, senha_hash: str) -> bool:
+    if len(senha.encode()) > MAX_BYTES_SENHA:  # VULN-06: evita erro 500
+        return False
     return bcrypt.checkpw(senha.encode(), senha_hash.encode())
+
+
+# VULN-05: hash falso para gastar o mesmo tempo quando o e-mail não existe
+HASH_FALSO = gerar_hash("senha-falsa-para-igualar-o-tempo")
 
 
 def criar_token(dados: dict, minutos: int = TOKEN_MINUTOS) -> str:
@@ -27,7 +36,8 @@ def criar_token(dados: dict, minutos: int = TOKEN_MINUTOS) -> str:
 
 
 def ler_token(token: str) -> dict:
-    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITMO])
+    # VULN-02: exige expiração e usuário dentro do token
+    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITMO], options={"require": ["exp", "sub"]})
 
 
 def usuario_logado(

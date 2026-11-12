@@ -11,6 +11,7 @@ export default function Cadastro() {
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [link, setLink] = useState(""); // link de confirmação devolvido pela API
+  const [enviado, setEnviado] = useState(false); // cadastro feito, link só no e-mail
   const [confirmado, setConfirmado] = useState(false);
   const navigate = useNavigate();
 
@@ -23,7 +24,9 @@ export default function Cadastro() {
     setEnviando(true);
     try {
       const resposta = await api.post("/auth/cadastro", dados);
-      setLink(resposta.link_confirmacao);
+      // Sem MODO_DEMO a API não devolve o link: ele vai só para o e-mail da pessoa
+      if (resposta.link_confirmacao) setLink(resposta.link_confirmacao);
+      else setEnviado(true);
     } catch (e) {
       setErro(e.message);
     } finally {
@@ -42,7 +45,22 @@ export default function Cadastro() {
     }
   }
 
-  // Depois de criar a conta, pede a confirmação do e-mail
+  // Sem modo demonstração: só avisa para abrir o link enviado ao e-mail
+  if (enviado) {
+    return (
+      <Tela titulo="Criar conta">
+        <h2 className="titulo">Confirme seu e-mail</h2>
+        <p className="subtitulo">
+          Enviamos um link de confirmação para {dados.email}. Abra o link e depois entre.
+        </p>
+        <button className="botao" onClick={() => navigate("/login")}>
+          Ir para o login
+        </button>
+      </Tela>
+    );
+  }
+
+  // Modo demonstração: o botão faz o papel de "clicar no link do e-mail"
   if (link) {
     return (
       <Tela titulo="Criar conta">

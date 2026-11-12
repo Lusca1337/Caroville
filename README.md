@@ -80,8 +80,11 @@ O backend lê o arquivo `backend/.env`. Copie o modelo `backend/.env.example` pa
 | Variável | Para que serve | Exemplo |
 |----------|----------------|---------|
 | `DATABASE_URL` | Endereço do PostgreSQL | `postgresql://postgres:SUA_SENHA@localhost:5432/caroville` |
-| `SECRET_KEY` | Chave que assina os tokens de login; use um texto grande e aleatório | `troque-esta-chave-por-um-texto-grande-e-aleatorio` |
+| `SECRET_KEY` | Chave que assina os tokens de login. **Obrigatória**, mínimo 32 caracteres. Gere com `python -c "import secrets; print(secrets.token_urlsafe(48))"` | (texto aleatório gerado) |
 | `TOKEN_MINUTOS` | Quanto tempo o login dura, em minutos | `120` |
+| `MODO_DEMO` | `true` para a demonstração local (o cadastro devolve o link de confirmação e o `/docs` fica ativo). Padrão: `false` | `true` |
+
+Se `DATABASE_URL` ou `SECRET_KEY` faltarem (ou a chave for fraca), o servidor não inicia e explica o motivo. Veja `docs/relatorio-seguranca.md`.
 
 O frontend usa por padrão a API em `http://localhost:8000`. Para mudar, crie `frontend/.env` com `VITE_API_URL=<endereço>` (modelo em `frontend/.env.example`).
 

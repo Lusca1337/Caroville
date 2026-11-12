@@ -71,6 +71,8 @@ class Cadastro(BaseModel):
     def v_senha(cls, v):
         if len(v or "") < 8:
             raise ValueError("A senha deve ter no mínimo 8 caracteres")
+        if len(v.encode()) > 72:  # VULN-06: limite do bcrypt
+            raise ValueError("A senha deve ter no máximo 72 caracteres")
         return v
 
 

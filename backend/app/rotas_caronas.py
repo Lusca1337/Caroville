@@ -1,6 +1,7 @@
 """US02 a US05 - Caronas e solicitações (RF06 a RF16)."""
 from datetime import date, datetime, timedelta
 
+import psycopg
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.avisos import avisar
@@ -176,10 +177,13 @@ def solicitar_carona(
     if ja_tem:
         raise HTTPException(409, "Você já tem uma solicitação ativa nesta carona")
 
-    solicitacao = db.execute(
-        "INSERT INTO solicitacao (carona_id, passageiro_id) VALUES (%s, %s) RETURNING id",
-        (carona_id, usuario["id"]),
-    ).fetchone()
+    try:
+        solicitacao = db.execute(
+            "INSERT INTO solicitacao (carona_id, passageiro_id) VALUES (%s, %s) RETURNING id",
+            (carona_id, usuario["id"]),
+        ).fetchone()
+    except psycopg.errors.UniqueViolation:  # VULN-11: dois cliques ao mesmo tempo
+        raise HTTPException(409, "Você já tem uma solicitação ativa nesta carona")
 
     motorista = db.execute(
         "SELECT email FROM usuario WHERE id = %s", (carona["motorista_id"],)

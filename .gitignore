@@ -5,3 +5,8 @@ node_modules/
 dist/
 .pytest_cache/
 .vscode/
+
+.agents/
+.claude/
+skills-lock.json
+.vscode/

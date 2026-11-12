@@ -1,0 +1,73 @@
+{
+  "run_id": "caroville-run-1",
+  "repo": "Lusca1337/Caroville",
+  "target": "C:/Users/Usuario/Downloads/caroville",
+  "source_ref": {
+    "commit": "7a4169ad63cc24d95d837d508dee2adadade57d4",
+    "worktree_dirty": true,
+    "dirty_notes": "Reviewed the working tree as found. Modified tracked files: README.md, backend/app/rotas_caronas.py, docs/01-requisitos-funcionais.md, docs/api-endpoints.md, backend/app/__pycache__/*.pyc. Untracked and reviewed: frontend/, backend/tests/, backend/pytest.ini, backend/.env.example, .gitignore, docs/testes.md. Untracked and out of scope: .agents/, .claude/ (audit tooling), .vscode/, skills-lock.json, backend/venv/ (third-party site-packages), backend/.env (read for key names only; values not recorded)."
+  },
+  "profile": "quick",
+  "profile_rationale": "Small target: about 940 lines of backend Python (FastAPI + psycopg) plus a small React SPA (frontend/src). The quick profile is the skill's recommended fit for small targets. This is a partial pass: one hunter wave and one final coverage critic.",
+  "scope_paths": [
+    "backend/app",
+    "backend/database",
+    "backend/tests",
+    "backend/requirements.txt",
+    "backend/.env.example",
+    "frontend/src",
+    "frontend/index.html",
+    "frontend/vite.config.js",
+    "frontend/package.json",
+    ".gitignore",
+    "docs",
+    "README.md"
+  ],
+  "budget": null,
+  "planned_agents": {
+    "reconnaissance": 0,
+    "hunters": 3,
+    "final_critic": 1,
+    "verifiers": "one per surviving candidate (quick profile merges Phase 3 and Phase 5)"
+  },
+  "reconnaissance_mode": "parent-direct",
+  "reconnaissance_note": "Deviation from RECONNAISSANCE.md: the four reconnaissance roles (1a-1d) were performed directly by the parent, which read the whole in-scope source (small enough to read in full) instead of delegating to four research agents. Recon facts are summarized in architecture.md.",
+  "execution_policy": "sandboxed-source-and-local-only",
+  "sandbox_capability": {
+    "available": false,
+    "blocker": "Host is Windows 11 with Git Bash/PowerShell. No OS-enforced sandbox is available that can provide all of: no external network, empty allowlisted environment, read-only target and toolchain, scratch-only writes, and CPU/memory/process/disk/wall-clock limits. Node also exposes no O_NOFOLLOW/O_NONBLOCK here, so the race-safe artifact promotion procedure cannot be enforced either.",
+    "consequence": "No target-controlled code (pytest, uvicorn, vite, harnesses) was executed. All checks are source-only (method: source, artifact: null). Because the confirmed verdict requires a bounded local observed result, no record can reach confirmed in this run; source-complete candidates are recorded as needs_validation with the sandbox blocker."
+  },
+  "validator_note": "validate-coverage-ledger.cjs and validate-findings.cjs refuse to read any file on this platform (no O_NOFOLLOW). Run files are parent-written, not target-controlled, so they are validated with a wrapper that does an lstat regular-file/non-symlink check and then calls the validators' exported validateDocument() functions unchanged.",
+  "companion_files_selected": [
+    "ATTACK-CLASSES.md",
+    "WEB-PROTOCOL-AND-AUTH.md",
+    "RESOURCE-EXHAUSTION-AND-AVAILABILITY.md",
+    "CLIENT-SIDE.md"
+  ],
+  "prior_runs": [],
+  "prior_runs_note": "No prior coverage-ledger.json or findings.json exists for this repository.",
+  "shared_file_owners": {
+    "run-metadata.json": "parent",
+    "architecture.md": "parent",
+    "coverage-ledger.json": "parent",
+    "findings.json": "parent",
+    "REPORT.md": "parent",
+    "FINDINGS-DETAIL.md": "parent",
+    "NEEDS-VALIDATION.md": "parent"
+  },
+  "run_status": "complete",
+  "agents_spent": {
+    "reconnaissance": 0,
+    "hunters": 3,
+    "final_critic": 1,
+    "verifiers": 8,
+    "total": 12
+  },
+  "result_summary": {
+    "confirmed": 0,
+    "needs_validation": 6,
+    "rejected": 2,
+    "deferred_units": 1
+  }
+}
